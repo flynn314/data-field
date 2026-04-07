@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Flynn314\DataField;
 
+use Illuminate\Database\Eloquent\Casts\ArrayObject;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
- * @property array data
+ * @property ArrayObject data
  * @mixin Model
  */
 trait DataFieldSetGet
@@ -56,10 +58,10 @@ trait DataFieldSetGet
     {
         if (Str::contains($key, '.')) {
             [$one, $two] = explode('.', $key, 2);
-            return $this->data[$one][$two] ?? $default;
+            return $this->{self::DATA}[$one][$two] ?? $default;
         }
 
-        $value = $this->data[$key] ?? $default;
+        $value = $this->{self::DATA}[$key] ?? $default;
 
         $casts = $this->casts();
         if (isset($casts[$key]) && 'boolean' === $casts[$key]) {
@@ -114,42 +116,36 @@ trait DataFieldSetGet
             }
         }
 
-        $data = $this->data;
         if (Str::endsWith($key, '.')) {
             $key = Str::rtrim($key, '.');
-            $data[$key][] = $value;
+            $this->{self::DATA}[$key][] = $value;
         } elseif (Str::contains($key, '.')) {
             [$one, $two] = explode('.', $key, 2);
-            $data[$one][$two] = $value;
+            $this->{self::DATA}[$one][$two] = $value;
         } else {
-            $data[$key] = $value;
+            $this->{self::DATA}[$key] = $value;
         }
-        $this->data = $data;
     }
 
     public function unsetData(string $key): void
     {
         if (Str::contains($key, '.')) {
             [$one, $two] = explode('.', $key, 2);
-            $data = $this->data;
-            if (isset($data[$one][$two])) {
-                unset($data[$one][$two]);
+            if (isset($this->{self::DATA}[$one][$two])) {
+                unset($this->{self::DATA}[$one][$two]);
             }
-            if (isset($data[$one]) && !$data[$one]) {
-                unset($data[$one]);
+            if (isset($this->{self::DATA}[$one]) && !$this->{self::DATA}[$one]) {
+                unset($this->{self::DATA}[$one]);
             }
-            $this->data = $data;
-        } elseif (isset($this->data[$key])) {
-            $data = $this->data;
-            unset($data[$key]);
-            $this->data = $data;
+        } elseif (isset($this->{self::DATA}[$key])) {
+            unset($this->{self::DATA}[$key]);
         }
     }
 
     public function save(array $options = []): bool
     {
-        if (!$this->data) {
-            $this->data = [];
+        if (!$this->{self::DATA}) {
+            $this->{self::DATA} = [];
         }
 
         return parent::save($options);
@@ -182,7 +178,7 @@ trait DataFieldSetGet
     protected function dataFieldCasts(): array
     {
         return [
-            'data' => 'array',
+            self::DATA => AsArrayObject::class,
         ];
     }
 
