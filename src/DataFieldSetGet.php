@@ -14,6 +14,44 @@ use Illuminate\Support\Str;
  */
 trait DataFieldSetGet
 {
+    public const string DATA = 'data';
+
+    public function getAttribute($key)
+    {
+        $reflection = new \ReflectionClass($this);
+        $attributes = $reflection->getAttributes(DataFields::class);
+
+        if ($attributes !== []) {
+            /** @var DataFields $publicData */
+            $publicData = $attributes[0]->newInstance();
+
+            if (in_array($key, $publicData->columns)) {
+                return $this->getData($key);
+            }
+        }
+
+        return parent::getAttribute($key);
+    }
+
+    public function setAttribute($key, $value): mixed
+    {
+        $reflection = new \ReflectionClass($this);
+        $attributes = $reflection->getAttributes(DataFields::class);
+
+        if ($attributes !== []) {
+            /** @var DataFields $publicData */
+            $publicData = $attributes[0]->newInstance();
+
+            if (in_array($key, $publicData->columns)) {
+                $this->setData($key, $value);
+
+                return $this;
+            }
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     public function getData(string $key, mixed $default = null): mixed
     {
         if (Str::contains($key, '.')) {
@@ -106,5 +144,33 @@ trait DataFieldSetGet
             unset($data[$key]);
             $this->data = $data;
         }
+    }
+
+    public function save(array $options = []): bool
+    {
+        if (!$this->data) {
+            $this->data = [];
+        }
+
+        return parent::save($options);
+    }
+
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        $reflection = new \ReflectionClass($this);
+        $attributes = $reflection->getAttributes(DataFields::class);
+
+        if ($attributes !== []) {
+            /** @var DataFields $publicData */
+            $publicData = $attributes[0]->newInstance();
+
+            foreach ($publicData->columns as $column) {
+                $data[$column] = $this->getAttribute($column);
+            }
+        }
+
+        return $data;
     }
 }
