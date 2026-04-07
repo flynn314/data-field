@@ -1,0 +1,17 @@
+{
+	"name": "flynn314/data-field",
+	"description": "Data field",
+	"type": "library",
+	"license": "Apache-2.0",
+	"require": {
+		"php": "^8.4",
+		"laravel/laravel": ">=10"
+	},
+	"autoload": {
+		"psr-4": {
+			"Flynn314\\DataField\\": "src"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
