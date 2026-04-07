@@ -173,4 +173,28 @@ trait DataFieldSetGet
 
         return $data;
     }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function dataFieldCasts(): array
+    {
+        return [
+            'data' => 'array',
+        ];
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return array_merge($this->dataFieldCasts(), [
+            // model casts goes here..
+        ]);
+    }
 }
