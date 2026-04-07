@@ -9,8 +9,21 @@ use Flynn314\DataField\DataFieldSetGet;
 #[DataFields([
     'name',
     'test',
+    'array1',
 ])]
 final class TestModelWithAttribute extends TestModel
 {
     use DataFieldSetGet;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return array_merge($this->dataFieldCasts(), [
+            'array1' => 'array',
+        ]);
+    }
 }
