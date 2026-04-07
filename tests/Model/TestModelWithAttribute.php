@@ -10,6 +10,7 @@ use Flynn314\DataField\DataFieldSetGet;
     'name',
     'test',
     'array1',
+    'array2',
 ])]
 final class TestModelWithAttribute extends TestModel
 {

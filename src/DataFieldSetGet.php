@@ -116,6 +116,10 @@ trait DataFieldSetGet
             }
         }
 
+        if (!$this->{self::DATA}) {
+            $this->{self::DATA} = [];
+        }
+
         if (Str::endsWith($key, '.')) {
             $key = Str::rtrim($key, '.');
             $this->{self::DATA}[$key][] = $value;

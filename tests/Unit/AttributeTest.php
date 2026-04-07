@@ -46,4 +46,18 @@ final class AttributeTest extends AbstractTestCase
         $this->assertArrayHasKey('test2', $values);
         $this->assertCount(2, $values);
 	}
+
+    public function testArraySetOnEmptyValue(): void
+	{
+        $model = new TestModelWithAttribute();
+        $model->array2 = ['test1', 'test2'];
+
+        $this->assertArrayNotHasKey('name', $model->getAttributes());
+
+        $values = array_flip($model->data->toArray()['array2']);
+
+        $this->assertArrayHasKey('test1', $values);
+        $this->assertArrayHasKey('test2', $values);
+        $this->assertCount(2, $values);
+	}
 }
