@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Flynn\DataField;
+namespace Flynn314\DataField;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
 final class DataFields

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Flynn\DataField;
+namespace Flynn314\DataField;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
