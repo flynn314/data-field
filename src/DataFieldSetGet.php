@@ -64,24 +64,28 @@ trait DataFieldSetGet
         $value = $this->{self::DATA}[$key] ?? $default;
 
         $casts = $this->casts();
-        if (isset($casts[$key]) && 'boolean' === $casts[$key]) {
-            return (bool) $value;
-        } elseif (isset($casts[$key]) && 'datetime' === $casts[$key] && $value) {
-            return \DateTime::createFromFormat('Y-m-d H:i:s', $value);
-        } elseif (isset($casts[$key])) {
-            if ('array' === $casts[$key] && is_array($value)) {
-                // all good
-            } else {
-                Log::warning('Unhandled data field cast', [
-                    'key' => $key,
-                    'cast' => $casts[$key],
-                    'is_array' => is_array($value),
-                    'is_string' => is_string($value),
-                    'is_numeric' => is_numeric($value),
-                    'is_null' => null === $value,
-                ]);
-            }
+        if (!isset($casts[$key])) {
+            return $value;
         }
+
+        if ('boolean' === $casts[$key]) {
+            return (bool) $value;
+        } elseif ('datetime' === $casts[$key] && $value) {
+            return \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+        } elseif ('array' === $casts[$key] && is_array($value)) {
+            return $value;
+        } elseif (in_array($casts[$key], ['hashed'])) {
+            return $value;
+        }
+
+        Log::warning('Unhandled data field cast', [
+            'key' => $key,
+            'cast' => $casts[$key],
+            'is_array' => is_array($value),
+            'is_string' => is_string($value),
+            'is_numeric' => is_numeric($value),
+            'is_null' => null === $value,
+        ]);
 
         return $value;
     }
