@@ -72,13 +72,15 @@ trait DataFieldSetGet
             return (bool) $value;
         } elseif ('datetime' === $casts[$key] && $value) {
             return \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+        } elseif (in_array($casts[$key], ['int', 'integer']) && $value) {
+            return (int) $value;
         } elseif ('array' === $casts[$key] && is_array($value)) {
             return $value;
         } elseif (in_array($casts[$key], ['hashed'])) {
             return $value;
         }
 
-        Log::warning('Unhandled data field cast', [
+        Log::warning('Unhandled data get field cast', [
             'key' => $key,
             'cast' => $casts[$key],
             'is_array' => is_array($value),
@@ -106,11 +108,13 @@ trait DataFieldSetGet
             }
         } elseif (isset($casts[$key]) && 'hashed' === $casts[$key]) {
             $value = Hash::make($value);
+        } elseif (isset($casts[$key]) && in_array($casts[$key], ['int', 'integer'])) {
+            $value = (int) $value;
         } elseif (isset($casts[$key])) {
             if ('array' === $casts[$key] && is_array($value)) {
                 // all good
             } else {
-                Log::warning('Unhandled data field cast 2', [
+                Log::warning('Unhandled data set field cast', [
                     'cast' => $casts[$key],
                     'is_array' => is_array($value),
                     'is_string' => is_string($value),
